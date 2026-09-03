@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>使用マニュアル（月次成果レポートジェネレーター）</title>
+<style>
+  :root {
+    --bordeaux: #700010;
+    --greige: #b1ad9d;
+    --gold: #d9b47a;
+    --light-burgundy: #a35b63;
+    --cream: #f5ede2;
+    --dark-gray: #4a4a4a;
+    --white: #ffffff;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 0;
+    background: var(--cream);
+    color: var(--dark-gray);
+    font-family: "Hiragino Sans", "Yu Gothic", "Segoe UI", sans-serif;
+    line-height: 1.8;
+  }
+  .page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 32px 80px;
+  }
+  header {
+    border-bottom: 4px solid var(--bordeaux);
+    padding-bottom: 20px;
+    margin-bottom: 32px;
+  }
+  header .eyebrow {
+    color: var(--bordeaux);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+  h1 {
+    margin: 6px 0 4px;
+    font-size: 1.6rem;
+    color: var(--bordeaux);
+  }
+  header .meta {
+    color: var(--dark-gray);
+    font-size: 0.85rem;
+    opacity: 0.75;
+  }
+  h2 {
+    color: var(--bordeaux);
+    font-size: 1.15rem;
+    border-left: 6px solid var(--gold);
+    padding-left: 12px;
+    margin-top: 44px;
+    margin-bottom: 16px;
+  }
+  h3 {
+    color: var(--light-burgundy);
+    font-size: 1rem;
+    margin-top: 24px;
+    margin-bottom: 8px;
+  }
+  p { margin: 0 0 12px; }
+  .card {
+    background: var(--white);
+    border: 1px solid var(--greige);
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+  }
+  .flow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: stretch;
+    margin: 16px 0;
+  }
+  .flow-step {
+    flex: 1;
+    min-width: 140px;
+    background: var(--white);
+    border: 1px solid var(--greige);
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 0.85rem;
+  }
+  .flow-step .step-label {
+    display: inline-block;
+    background: var(--bordeaux);
+    color: var(--white);
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 999px;
+    margin-bottom: 8px;
+  }
+  .flow-arrow {
+    align-self: center;
+    color: var(--gold);
+    font-size: 1.3rem;
+    font-weight: 700;
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 12px 0 8px;
+    font-size: 0.88rem;
+  }
+  th, td {
+    border: 1px solid var(--greige);
+    padding: 8px 10px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th {
+    background: var(--cream);
+    color: var(--bordeaux);
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .tag {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--dark-gray);
+    background: var(--cream);
+    border: 1px solid var(--greige);
+    border-radius: 5px;
+    padding: 2px 7px;
+    font-family: "SF Mono", "Menlo", "Consolas", monospace;
+  }
+  .callout {
+    background: #fdecee;
+    border: 1px solid var(--bordeaux);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin: 16px 0;
+  }
+  .callout .callout-title {
+    color: var(--bordeaux);
+    font-weight: 700;
+    font-size: 0.9rem;
+    margin-bottom: 6px;
+  }
+  .callout p:last-child { margin-bottom: 0; }
+  .note {
+    background: var(--cream);
+    border-left: 4px solid var(--gold);
+    padding: 12px 16px;
+    border-radius: 4px;
+    font-size: 0.88rem;
+    margin: 16px 0;
+  }
+  ul {
+    margin: 8px 0 12px;
+    padding-left: 22px;
+  }
+  li { margin-bottom: 6px; }
+  .timeline {
+    display: flex;
+    justify-content: space-between;
+    gap: 6px;
+    margin: 16px 0 4px;
+  }
+  .timeline .month {
+    flex: 1;
+    text-align: center;
+    padding: 10px 4px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    background: var(--cream);
+    border: 1px solid var(--greige);
+  }
+  .timeline .month.target {
+    background: var(--bordeaux);
+    color: var(--white);
+    border-color: var(--bordeaux);
+  }
+  .timeline .month.lookback {
+    background: var(--gold);
+    color: var(--white);
+    border-color: var(--gold);
+  }
+  .legend {
+    display: flex;
+    gap: 18px;
+    font-size: 0.78rem;
+    color: var(--dark-gray);
+    margin-bottom: 20px;
+  }
+  .legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .legend i {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+  }
+  footer {
+    margin-top: 56px;
+    padding-top: 16px;
+    border-top: 1px solid var(--greige);
+    font-size: 0.78rem;
+    color: var(--dark-gray);
+    opacity: 0.7;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header>
+    <div class="eyebrow">TomoniGate ／ 右腕AI 月次成果レポート機能</div>
+    <h1>使用マニュアル（月次成果レポートジェネレーター）</h1>
+    <div class="meta">対象：試作品（POC）レビュー用　/　2026年9月時点</div>
+  </header>
+
+  <p>
+    本ドキュメントは、右腕AIの追加モジュール「月次成果レポート」試作品（POC）の使い方と、
+    現時点での設計上の制約をご説明するものです。実際の右腕AIで想定している機能の一部を、
+    現段階では手入力によるシミュレーションで再現しています。
+  </p>
+
+  <h2>1. ジェネレーターの構成</h2>
+
+  <p>このジェネレーターは「入力画面」と「出力画面」の2画面で構成されるシンプルな一往復のツールです。</p>
+
+  <div class="flow">
+    <div class="flow-step">
+      <span class="step-label">入力画面</span>
+      <div>①会社名・対象年月・来月の優先課題（手入力）</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">
+      <span class="step-label">入力画面</span>
+      <div>②過去の決定／今月の対話／KPI／価値観（本来は右腕AIの過去ログデータベースから自動連携される想定のデータ）</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">
+      <span class="step-label">出力画面</span>
+      <div>AIが生成する月次成果レポート（Claude Opus 5による自動生成・ストリーミング表示）</div>
+    </div>
+  </div>
+
+  <p style="font-size:0.82rem; color:var(--dark-gray); opacity:0.8;">
+    ※ ①の「会社名・代表者名」は、PoC版ではシミュレーションのため自由入力ではなく、
+    「株式会社サンプル」「テスト株式会社」の2択から選ぶプルダウン形式にしています。
+  </p>
+
+  <h3>入力データの2つの性質</h3>
+  <p>入力画面のデータは、性質の異なる2種類に分かれています。</p>
+  <table>
+    <tr>
+      <th>区分</th>
+      <th>項目</th>
+      <th>本来の位置づけ</th>
+    </tr>
+    <tr>
+      <td>① 手入力する情報</td>
+      <td>基本情報（会社名・対象年月・来月の優先課題）</td>
+      <td>都度ユーザーが入力する項目。今後も手入力のまま</td>
+    </tr>
+    <tr>
+      <td>② 自動連携される想定の情報</td>
+      <td>
+        <span class="tag">過去ログDB: past_decisions</span>
+        <span class="tag">過去ログDB: dialogues</span>
+        <span class="tag">過去ログDB: kpis</span>
+        <span class="tag">過去ログDB: values_ltm</span>
+      </td>
+      <td>経営ダッシュボード・共創機能・LTMが右腕AIの過去ログデータベースに書き込んだデータを、本来は自動で読み込む想定</td>
+    </tr>
+  </table>
+
+  <div class="note">
+    <strong>PoC版とβ版以降の違い：</strong><br>
+    PoC版では、②の4項目もあらかじめダミー値が自動入力された状態で画面に表示されており、
+    実際にユーザーに入力していただくのは①の基本情報だけです（②は「見えているが、確認・修正できる」状態）。
+    β版以降では、②はこの入力画面のUI自体から姿を消し、システムが右腕AIの過去ログデータベースから
+    自動取得した上でレポート生成に活用する想定です。つまり将来的には、ユーザーは①を入力するだけで
+    レポートが作成される形になります。
+  </div>
+
+  <h2>2. あくまで「シミュレーション」である点について</h2>
+
+  <div class="callout">
+    <div class="callout-title">重要：実際のデータベースには接続していません</div>
+    <p>
+      画面上に「右腕AIの過去ログデータベース」という表記がありますが、これは
+      「本番ではここが自動連携される」ことを示す説明ラベルにすぎず、実際にそうしたデータベースへ
+      接続しているわけではありません。現状は、あらかじめ用意した架空企業のダミーデータを
+      アプリのソースコード内に直接書き込み、画面を開いた時にその内容が初期値として
+      表示される形でシミュレーションしています。
+    </p>
+    <p>
+      技術的には、2026年4月〜8月のシミュレーションデータは、アプリのソースコード内
+      <span class="tag">lib/sampleData.ts</span> にハードコードされたTypeScriptの配列
+      （<span class="tag">SAMPLE_PAST_DECISIONS</span> など）として格納されています。
+      ページを開いた時にこの静的データがフォームの初期値として読み込まれる仕組みであり、
+      実データベースには一切接続していません。
+    </p>
+  </div>
+
+  <p>
+    このシミュレーション用データは、ある架空の中小企業（受託製造業を想定）が
+    2026年4月〜8月の間に経験した「値上げ対応」「大口案件と既存顧客対応の両立」
+    「新卒スタッフの教育」などの一連の出来事として、一つのストーリーになるように作成しています。
+  </p>
+
+  <p>
+    このため、対象年月の選択肢は現時点では
+    <strong style="color:var(--bordeaux)">2026年7月度・8月度の2つのみ</strong>
+    に絞っています。実際の運用時には全ての月が選択可能になる想定ですが、
+    現在のPOCではダミーデータの範囲でしか正しく成果を判断できないため、意図的に制限しています。
+  </p>
+
+  <h2>3. 「過去3ヶ月分」を参照する設計とデータ範囲</h2>
+
+  <p>
+    月次成果レポートは、対象月の成果だけを単独で見るのではなく、
+    それ以前の意思決定が積み重なった結果として成果を捉える設計になっています。
+    そのため、レポート生成時には対象月から遡って直近3ヶ月分の「過去の決定」データを参照します。
+  </p>
+
+  <div class="note">
+    例）2026年8月度のレポートを作る場合 → 2026年7月・6月・5月の「過去の決定」を参照<br>
+    　　2026年7月度のレポートを作る場合 → 2026年6月・5月・4月の「過去の決定」を参照
+  </div>
+
+  <p>この参照期間をまかなうため、シミュレーション用データベースには2026年4月〜8月の5ヶ月分を用意しています。</p>
+
+  <div class="legend">
+    <span><i style="background:var(--gold)"></i>参照期間（過去3ヶ月）</span>
+    <span><i style="background:var(--bordeaux)"></i>対象月（レポート生成月）</span>
+  </div>
+  <div class="timeline">
+    <div class="month">4月</div>
+    <div class="month">5月</div>
+    <div class="month">6月</div>
+    <div class="month">7月</div>
+    <div class="month">8月</div>
+  </div>
+  <p style="font-size:0.82rem; color:var(--dark-gray); opacity:0.8;">
+    ※ 7月度レポートを選ぶと4〜6月が参照期間、8月度レポートを選ぶと5〜7月が参照期間になります。
+    4月分のデータは7月度レポートのためだけに用意しています。
+  </p>
+
+  <div class="note">
+    <strong>本番実装時の想定について：</strong><br>
+    今回のPOCでは検証のしやすさを優先し、参照期間を「直近3ヶ月」に固定しています。
+    しかし、実際に右腕AIの過去ログデータベースや「社長の右腕AI」
+    システムに実装する際には、右腕AI本体が持つ過去ログデータベースから該当データを取得する想定であり、
+    参照期間も3ヶ月に限定する必要はありません。例えば過去1年分を遡って当月の成果を
+    評価する、といった設計も想定しています（1年間という期間が適切かどうかは、今後
+    あらためて検討する論点です）。
+  </div>
+
+  <h2>4. あわせてご確認いただきたい点</h2>
+  <ul>
+    <li>
+      入力画面の下部にある「過去の決定」「今月の対話」の日付と、選択した対象年月が食い違っている場合、
+      レポート生成前に赤系（ボルドー色）の警告メッセージで具体的に指摘する仕組みを入れています。
+      これは、本来右腕AIの過去ログデータベースで自動的に整合するはずのデータを手入力で再現している以上、
+      入力ミスによる事実と異なるレポート生成を防ぐための安全策です。
+    </li>
+    <li>
+      「今月の対話」のサンプルデータは2026年8月度を主な想定として作成しているため、
+      対象年月を7月度に切り替えて試される場合は、上記の警告が表示されることがあります。
+      その場合は上記3.の整合性チェック機能の動作としてご確認いただくか、
+      日付をお好みの検証用の値に書き換えてからお試しください。
+    </li>
+  </ul>
+
+  <footer>
+    月次成果レポート ジェネレーター（POC） — 本ドキュメントはPOCレビュー用に作成した簡易マニュアルです。
+  </footer>
+
+</div>
+</body>
+</html>

@@ -1,11 +1,17 @@
+/*
+  3色ルール：白（背景）・黒（文字）・アクセント1色（terracotta）。
+  グレーは中立的な区切り線・背景としてのみ使用し、色数のカウントには含めない。
+*/
 :root {
-  --bg: #faf7f2;
-  --panel: #ffffff;
-  --border: #e5ddd0;
-  --text: #33302a;
-  --text-muted: #746c5e;
+  --white: #ffffff;
+  --black: #1a1a1a;
   --accent: #b5651d;
-  --accent-soft: #f3e6d8;
+  --accent-soft: #fbebdd;
+  --gray-border: #e2e2e2;
+  --gray-bg: #f7f7f7;
+  --gray-text: #6b6b6b;
+  /* TomoniGate コーポレートカラー（ボルドー）。入力チェック（必須項目・日付整合性）の警告表示に使用する意味色で、3色ルールのアクセントとは別枠。 */
+  --bordeaux: #700010;
   color-scheme: light;
 }
 
@@ -20,47 +26,179 @@ body {
 }
 
 body {
-  background: var(--bg);
-  color: var(--text);
+  background: var(--white);
+  color: var(--black);
   font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", "Segoe UI", sans-serif;
   line-height: 1.7;
 }
 
 main {
-  max-width: 960px;
+  max-width: 720px;
   margin: 0 auto;
-  padding: 32px 20px 80px;
+  padding: 24px 20px 32px;
+}
+
+main.with-sticky-bar {
+  padding-bottom: 96px;
 }
 
 h1 {
-  font-size: 1.5rem;
-  margin-bottom: 4px;
+  font-size: 1.4rem;
+  margin: 4px 0;
 }
 
 .subtitle {
-  color: var(--text-muted);
-  margin-bottom: 28px;
-  font-size: 0.92rem;
+  color: var(--gray-text);
+  margin-bottom: 24px;
+  font-size: 0.9rem;
 }
 
-section.card {
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 20px 24px;
-  margin-bottom: 20px;
+/* ナビゲーション（現在地表示） */
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
 }
 
-section.card h2 {
-  font-size: 1rem;
-  margin: 0 0 4px;
+.breadcrumb-path {
+  font-size: 0.82rem;
+  color: var(--gray-text);
+}
+
+.back-link {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 0;
+}
+
+.back-link:hover {
+  text-decoration: underline;
+}
+
+/* 画面レベルの入力／出力バッジ */
+.screen-badge {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding: 4px 10px;
+  border-radius: 999px;
+  margin-bottom: 8px;
+}
+
+.screen-badge-input {
+  background: var(--accent-soft);
   color: var(--accent);
 }
 
-section.card .hint {
-  font-size: 0.82rem;
-  color: var(--text-muted);
+.screen-badge-output {
+  background: var(--black);
+  color: var(--white);
+}
+
+/* 入力項目ゾーンの区切り（手入力 vs 右腕AIの過去ログデータベースからの自動連携の想定） */
+.zone-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin: 20px 0 6px;
+  text-transform: none;
+}
+
+.zone-label-manual {
+  color: var(--black);
+}
+
+.zone-label-auto {
+  color: var(--gray-text);
+}
+
+.zone-divider {
+  margin-top: 24px;
+  padding-top: 12px;
+  border-top: 2px dashed var(--gray-border);
+}
+
+.zone-note {
+  font-size: 0.78rem;
+  color: var(--gray-text);
+  margin: 0 0 14px;
+  line-height: 1.6;
+}
+
+.log-db-tag {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--gray-text);
+  background: var(--gray-bg);
+  border: 1px solid var(--gray-border);
+  border-radius: 5px;
+  padding: 2px 7px;
+  margin-right: 6px;
+  font-family: "SF Mono", "Menlo", "Consolas", monospace;
+  vertical-align: middle;
+}
+
+/* アコーディオン */
+.accordion {
+  border: 1px solid var(--gray-border);
+  border-radius: 10px;
   margin-bottom: 12px;
+  overflow: hidden;
+}
+
+.accordion.open {
+  border-color: var(--accent);
+}
+
+.accordion-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--white);
+  border: none;
+  padding: 14px 16px;
+  cursor: pointer;
+  text-align: left;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--black);
+}
+
+.accordion.open .accordion-header {
+  background: var(--accent-soft);
+}
+
+.accordion-title {
+  flex: 1;
+}
+
+.accordion-summary {
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: var(--gray-text);
+}
+
+.accordion-chevron {
+  color: var(--accent);
+  font-size: 0.8rem;
+}
+
+.accordion-body {
+  padding: 16px;
+  border-top: 1px solid var(--gray-border);
+}
+
+.hint {
+  font-size: 0.82rem;
+  color: var(--gray-text);
+  margin: 0 0 12px;
 }
 
 label {
@@ -71,48 +209,181 @@ label {
 }
 
 input[type="text"],
+input[type="number"],
+select,
 textarea {
   width: 100%;
   padding: 10px 12px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--gray-border);
   border-radius: 8px;
   font-size: 0.9rem;
   font-family: inherit;
-  background: #fffdfa;
-  color: var(--text);
+  background: var(--white);
+  color: var(--black);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #bdbdbd;
 }
 
 textarea {
   resize: vertical;
-  min-height: 90px;
-  font-family: "SF Mono", "Menlo", "Consolas", monospace;
-  font-size: 0.8rem;
-  line-height: 1.5;
+  min-height: 60px;
 }
 
-input[type="text"]:focus,
+input:focus,
+select:focus,
 textarea:focus {
   outline: none;
   border-color: var(--accent);
   box-shadow: 0 0 0 3px var(--accent-soft);
 }
 
-.error {
-  color: #a12d2d;
-  font-size: 0.8rem;
-  margin-top: 4px;
+.month-picker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.month-picker select {
+  width: auto;
+  flex: 1;
+}
+
+.month-picker-suffix {
+  color: var(--gray-text);
+  font-size: 0.85rem;
+}
+
+.note-subtle {
+  color: #bdbdbd;
+  font-size: 0.75rem;
+  margin: 6px 0 0;
+  line-height: 1.6;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 400;
+  font-size: 0.85rem;
+  margin: 12px 0 4px;
+}
+
+.checkbox-label input {
+  width: auto;
+}
+
+.nested-fields {
+  margin-top: 8px;
+  padding: 10px 12px;
+  background: var(--gray-bg);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.field-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.field-row select {
+  flex: 1;
+}
+
+.unit-input {
+  max-width: 90px;
+}
+
+/* 配列エントリ：左に内容、右にアクション */
+.entry-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--gray-border);
+  border-radius: 8px;
+  margin-bottom: 10px;
+  background: var(--gray-bg);
+}
+
+.entry-row-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.entry-row-content input,
+.entry-row-content select {
+  margin: 0;
+}
+
+.entry-row-remove {
+  flex-shrink: 0;
+  background: var(--white);
+  border: 1px solid var(--gray-border);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 0.78rem;
+  color: var(--gray-text);
+  cursor: pointer;
+}
+
+.entry-row-remove:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.add-row {
+  width: 100%;
+  background: var(--white);
+  border: 1px dashed var(--gray-border);
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 0.85rem;
+  color: var(--accent);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.add-row:hover {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+
+/* アクション：常に手の届く場所に固定表示 */
+.sticky-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 20px;
+  background: var(--white);
+  border-top: 1px solid var(--gray-border);
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.06);
 }
 
 button.generate {
   background: var(--accent);
-  color: white;
+  color: var(--white);
   border: none;
   border-radius: 8px;
   padding: 12px 28px;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   transition: opacity 0.15s;
+  white-space: nowrap;
 }
 
 button.generate:disabled {
@@ -124,34 +395,119 @@ button.generate:not(:disabled):hover {
   opacity: 0.9;
 }
 
-.actions {
+.status {
+  font-size: 0.85rem;
+  color: var(--gray-text);
+}
+
+.field-error-list {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--bordeaux);
+  font-weight: 700;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  max-height: 64px;
+  overflow-y: auto;
+}
+
+.field-error-list li + li {
+  margin-top: 2px;
+}
+
+.status-standalone {
+  margin-top: 16px;
+}
+
+.progress-box {
+  margin-top: 16px;
+}
+
+.progress-steps {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
   display: flex;
-  gap: 12px;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.progress-step {
+  display: flex;
   align-items: center;
+  gap: 10px;
+  font-size: 0.88rem;
+  color: var(--gray-text);
+}
+
+.progress-step-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px solid var(--gray-border);
+  font-size: 0.72rem;
+  flex-shrink: 0;
+}
+
+.progress-step-done {
+  color: var(--black);
+}
+
+.progress-step-done .progress-step-icon {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--white);
+}
+
+.progress-step-active {
+  color: var(--black);
+  font-weight: 700;
+}
+
+.progress-step-active .progress-step-icon {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.error {
+  color: #a12d2d;
+}
+
+/* 結果画面：入力より一段前面に浮いた見せ方（階層関係） */
+.report {
+  background: var(--white);
+  border-radius: 14px;
+  padding: 32px 36px;
+}
+
+.report-elevated {
+  border: 1px solid var(--gray-border);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   margin-top: 8px;
 }
 
-.status {
-  font-size: 0.85rem;
-  color: var(--text-muted);
-}
-
-.report {
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 28px 32px;
-  margin-top: 28px;
-}
-
 .report h2 {
-  border-bottom: 1px solid var(--border);
+  border-bottom: 2px solid var(--accent-soft);
   padding-bottom: 8px;
   margin-top: 32px;
+  color: var(--black);
 }
 
 .report h2:first-child {
   margin-top: 0;
+}
+
+.report h3 {
+  font-size: 0.95rem;
+  color: var(--black);
+  margin: 20px 0 4px;
+}
+
+.report h3 + blockquote {
+  margin-top: 8px;
 }
 
 .report table {
@@ -163,13 +519,34 @@ button.generate:not(:disabled):hover {
 
 .report th,
 .report td {
-  border: 1px solid var(--border);
+  border: 1px solid var(--gray-border);
   padding: 8px 10px;
   text-align: left;
 }
 
 .report th {
   background: var(--accent-soft);
+}
+
+.report blockquote {
+  background: var(--accent-soft);
+  border-left: 4px solid var(--accent);
+  border-radius: 8px;
+  margin: 12px 0;
+  padding: 14px 18px;
+}
+
+.report blockquote p {
+  margin: 0;
+}
+
+.report blockquote p + p {
+  margin-top: 8px;
+}
+
+.report h2:first-of-type + blockquote {
+  font-size: 1.05rem;
+  font-weight: 600;
 }
 
 .top-actions {
@@ -180,15 +557,16 @@ button.generate:not(:disabled):hover {
 }
 
 button.secondary {
-  background: transparent;
-  border: 1px solid var(--border);
+  background: var(--white);
+  border: 1px solid var(--gray-border);
   border-radius: 8px;
   padding: 6px 14px;
   font-size: 0.8rem;
   cursor: pointer;
-  color: var(--text);
+  color: var(--black);
 }
 
 button.secondary:hover {
   background: var(--accent-soft);
+  border-color: var(--accent);
 }

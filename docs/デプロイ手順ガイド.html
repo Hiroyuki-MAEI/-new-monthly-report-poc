@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>デプロイ手順ガイド（月次成果レポートジェネレーター）</title>
+<style>
+  :root {
+    --bordeaux: #700010;
+    --greige: #b1ad9d;
+    --gold: #d9b47a;
+    --light-burgundy: #a35b63;
+    --cream: #f5ede2;
+    --dark-gray: #4a4a4a;
+    --white: #ffffff;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 0;
+    background: var(--cream);
+    color: var(--dark-gray);
+    font-family: "Hiragino Sans", "Yu Gothic", "Segoe UI", sans-serif;
+    line-height: 1.85;
+  }
+  .page {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 40px 32px 80px;
+  }
+  header {
+    border-bottom: 4px solid var(--bordeaux);
+    padding-bottom: 20px;
+    margin-bottom: 32px;
+  }
+  header .eyebrow {
+    color: var(--bordeaux);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+  h1 {
+    margin: 6px 0 4px;
+    font-size: 1.55rem;
+    color: var(--bordeaux);
+  }
+  header .meta {
+    color: var(--dark-gray);
+    font-size: 0.85rem;
+    opacity: 0.75;
+  }
+  h2 {
+    color: var(--bordeaux);
+    font-size: 1.1rem;
+    border-left: 6px solid var(--gold);
+    padding-left: 12px;
+    margin-top: 44px;
+    margin-bottom: 16px;
+  }
+  p { margin: 0 0 12px; }
+
+  /* 全体像：3ステップの図 */
+  .overview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 20px 0 8px;
+  }
+  .overview-step {
+    flex: 1;
+    min-width: 160px;
+    background: var(--white);
+    border: 1px solid var(--greige);
+    border-radius: 10px;
+    padding: 16px;
+    text-align: center;
+  }
+  .overview-step .num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--bordeaux);
+    color: var(--white);
+    font-weight: 700;
+    font-size: 0.85rem;
+    margin-bottom: 8px;
+  }
+  .overview-step .label {
+    font-weight: 700;
+    font-size: 0.88rem;
+    color: var(--dark-gray);
+  }
+  .overview-arrow {
+    align-self: center;
+    color: var(--gold);
+    font-size: 1.2rem;
+    font-weight: 700;
+  }
+
+  /* 手順ステップカード */
+  .step-card {
+    background: var(--white);
+    border: 1px solid var(--greige);
+    border-radius: 12px;
+    padding: 22px 24px;
+    margin-bottom: 20px;
+  }
+  .step-card .step-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .step-card .step-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--bordeaux);
+    color: var(--white);
+    font-weight: 700;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+  .step-card .step-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--black, #1a1a1a);
+  }
+  .who-badge {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 2px 9px;
+    border-radius: 999px;
+    margin-left: 4px;
+    vertical-align: middle;
+  }
+  .who-claude {
+    background: #eef1f7;
+    color: #3a4a6b;
+  }
+  .who-you {
+    background: var(--gold);
+    color: var(--white);
+  }
+  .substep {
+    background: var(--cream);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin: 10px 0;
+    font-size: 0.92rem;
+  }
+  .substep b { color: var(--bordeaux); }
+  .click-path {
+    display: inline-block;
+    background: #2d2d2d;
+    color: #f5f5f5;
+    font-family: "SF Mono", "Menlo", "Consolas", monospace;
+    font-size: 0.82rem;
+    padding: 2px 8px;
+    border-radius: 5px;
+    margin: 2px 0;
+  }
+  .note {
+    background: var(--cream);
+    border-left: 4px solid var(--gold);
+    padding: 12px 16px;
+    border-radius: 4px;
+    font-size: 0.88rem;
+    margin: 14px 0 0;
+  }
+  .callout {
+    background: #fdecee;
+    border: 1px solid var(--bordeaux);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin: 14px 0 0;
+    font-size: 0.9rem;
+  }
+  .callout .callout-title {
+    color: var(--bordeaux);
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  ul, ol { margin: 8px 0 8px; padding-left: 22px; }
+  li { margin-bottom: 6px; }
+  .glossary {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 10px 16px;
+    background: var(--white);
+    border: 1px solid var(--greige);
+    border-radius: 10px;
+    padding: 18px 20px;
+    font-size: 0.9rem;
+  }
+  .glossary dt {
+    font-weight: 700;
+    color: var(--bordeaux);
+  }
+  .glossary dd { margin: 0; }
+  footer {
+    margin-top: 56px;
+    padding-top: 16px;
+    border-top: 1px solid var(--greige);
+    font-size: 0.78rem;
+    color: var(--dark-gray);
+    opacity: 0.7;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header>
+    <div class="eyebrow">TomoniGate ／ 右腕AI 月次成果レポート機能</div>
+    <h1>デプロイ手順ガイド（月次成果レポートジェネレーター）</h1>
+    <div class="meta">対象：先生方に試作品を使ってもらうための公開作業　/　2026年9月時点</div>
+  </header>
+
+  <p>
+    このガイドは、パソコンの操作にあまり慣れていない方でも迷わないように、
+    「今、自分のパソコンにある月次成果レポートジェネレーターを、先生方が
+    インターネット経由で使えるようにする」までの手順を、1つずつ順番に説明するものです。
+  </p>
+
+  <h2>0. 今日やることの全体像</h2>
+  <p>難しく感じるかもしれませんが、実際にやることは大きく3つだけです。</p>
+
+  <div class="overview">
+    <div class="overview-step">
+      <div class="num">1</div>
+      <div class="label">変更内容を<br>GitHubに保存する</div>
+    </div>
+    <div class="overview-arrow">→</div>
+    <div class="overview-step">
+      <div class="num">2</div>
+      <div class="label">Vercelが自動で<br>公開ページを更新する</div>
+    </div>
+    <div class="overview-arrow">→</div>
+    <div class="overview-step">
+      <div class="num">3</div>
+      <div class="label">公開URLで<br>動作を確認して共有する</div>
+    </div>
+  </div>
+
+  <div class="note">
+    このジェネレーターは、以前の研修時にすでに一度、GitHub（コード保管庫）とVercel（公開先）に
+    登録済みです。ですので今回は「新しく公開する」のではなく、「今回追加した改良を、
+    すでにある公開ページに反映させる」作業になります。
+  </div>
+
+  <h2>用語がわからなくても大丈夫（かんたん用語集）</h2>
+  <dl class="glossary">
+    <dt>GitHub（ギットハブ）</dt>
+    <dd>ジェネレーターのプログラムのコードを保管しておく、インターネット上の倉庫のようなサービスです。</dd>
+    <dt>コミット</dt>
+    <dd>「ここまでの変更を、ひとまとまりの記録として確定する」という操作です。作業内容にタイトルを付けて保存するイメージです。</dd>
+    <dt>プッシュ（push）</dt>
+    <dd>手元のパソコンで確定した変更を、GitHub（倉庫）に実際にアップロードする操作です。</dd>
+    <dt>Vercel（バーセル）</dt>
+    <dd>GitHubに保管されたコードを読み取り、実際にブラウザで開けるWebページとして公開してくれるサービスです。</dd>
+    <dt>デプロイ</dt>
+    <dd>Vercelが最新のコードを取り込んで、公開ページを新しい内容に更新する処理のことです。</dd>
+  </dl>
+
+  <h2>手順</h2>
+
+  <div class="step-card">
+    <div class="step-head">
+      <div class="step-num">1</div>
+      <div class="step-title">変更内容をGitHubに保存する
+        <span class="who-badge who-claude">Claude（私）が実行</span>
+      </div>
+    </div>
+    <p>
+      今回のセッションで変更したファイル（画面のデザイン、AIへの指示文など）を、
+      GitHubというインターネット上の倉庫にアップロードします。この作業は、
+      前井様が「進めてください」とお伝えいただければ、私がターミナル上で代わりに実行します。
+      前井様ご自身でボタンをクリックする必要はありません。
+    </p>
+    <div class="substep">
+      <b>私が行う操作：</b> ①今回変更したファイルを確定（コミット）する　②GitHubへアップロード（プッシュ）する
+    </div>
+    <div class="note">
+      実行前に、私から「この内容でコミットしてよいですか？」と一度確認をします。
+      前井様は内容を見て「お願いします」とお答えいただくだけで大丈夫です。
+    </div>
+  </div>
+
+  <div class="step-card">
+    <div class="step-head">
+      <div class="step-num">2</div>
+      <div class="step-title">Vercelが自動で公開ページを更新する
+        <span class="who-badge who-claude">自動で進行</span>
+      </div>
+    </div>
+    <p>
+      GitHubに新しい内容がアップロードされると、Vercelがそれを検知して、
+      自動的に公開ページの中身を新しく作り直します（この処理が「デプロイ」です）。
+      前井様は何も操作する必要はありません。通常1〜3分程度で完了します。
+    </p>
+    <div class="substep">
+      <b>進み具合を見たい場合は：</b> ブラウザで
+      <span class="click-path">vercel.com</span> を開く →
+      右上からログイン → プロジェクト一覧から該当のプロジェクトをクリック →
+      「Deployments（デプロイ履歴）」というタブを開く → 一番上に表示される
+      デプロイの状態が「Building（作成中）」→「Ready（完了）」に変わるのを確認する
+    </div>
+    <div class="note">
+      Vercelへのログインは、前回の公開作業時にすでにアカウントを作成済みのはずです。
+      ログイン画面が出たら「Continue with GitHub」を選ぶと、GitHubのアカウントで
+      そのままログインできます。
+    </div>
+  </div>
+
+  <div class="step-card">
+    <div class="step-head">
+      <div class="step-num">3</div>
+      <div class="step-title">公開URLで動作を確認する
+        <span class="who-badge who-you">前井様と一緒に確認</span>
+      </div>
+    </div>
+    <p>
+      デプロイが完了したら、実際に公開されているURL（インターネット上の住所）を
+      ブラウザで開いて、今回の改良（会社名のプルダウン化、日付エラー表示など）が
+      きちんと反映されているかを確認します。
+    </p>
+    <div class="substep">
+      <b>確認する内容の例：</b>
+      <ul>
+        <li>会社名・代表者名がプルダウン選択になっているか</li>
+        <li>「レポートを生成する」ボタンの右側にエラー文がボルドー色の太字で出るか</li>
+        <li>実際にレポートを1件生成してみて、見た目が崩れていないか</li>
+      </ul>
+    </div>
+    <div class="note">
+      この確認は、私がブラウザ操作ツールで代わりに行うことも、前井様ご自身の
+      パソコンで確認していただくことも、どちらも可能です。
+    </div>
+  </div>
+
+  <div class="step-card">
+    <div class="step-head">
+      <div class="step-num">4</div>
+      <div class="step-title">先生方にURLを共有する
+        <span class="who-badge who-you">前井様が実行</span>
+      </div>
+    </div>
+    <p>
+      確認が済んだら、公開URLをコピーして、LINEなどで先生方に送るだけです。
+      あわせて、以前作成した「使用マニュアル（月次成果レポートジェネレーター）」のHTMLファイルも
+      LINEで送っていただくと、先生方が迷わず使えます。
+    </p>
+    <div class="callout">
+      <div class="callout-title">送付時のひとこと例</div>
+      <p style="margin:0;">
+        「月次成果レポートジェネレーターの試作品です。使い方はマニュアルをご覧ください。
+        現在はシミュレーションのため、対象年月は2026年7月度・8月度のみ選択可能です。」
+      </p>
+    </div>
+  </div>
+
+  <h2>うまくいかないときは</h2>
+  <ul>
+    <li>
+      <b>公開ページを開いても内容が変わっていない：</b>
+      ブラウザの再読み込み（更新）ボタンを押してみてください。それでも変わらない場合は、
+      Vercelの「Deployments」タブでデプロイが本当に完了しているか（Readyになっているか）を確認します。
+    </li>
+    <li>
+      <b>レポート生成時にエラーが出る：</b>
+      Vercel側の環境変数（AIを動かすためのカギ）が正しく設定されているかを確認する必要があります。
+      これは私の方で確認・修正できますので、エラー画面のスクリーンショットを送ってください。
+    </li>
+    <li>
+      <b>操作の途中で分からなくなった：</b>
+      無理に自分で進めず、その時点の画面のスクリーンショットを見せていただければ、
+      次に何をすればよいかご案内します。
+    </li>
+  </ul>
+
+  <footer>
+    月次成果レポート ジェネレーター（POC） — 本ドキュメントは公開作業をサポートするための簡易ガイドです。
+  </footer>
+
+</div>
+</body>
+</html>
